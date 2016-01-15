@@ -1,0 +1,22 @@
+<div class="row">
+  <div class="col-lg-4 col-sm-12">
+    <dashboard-chart action="wireless:hour" format="hour" title="Wireless sessions by hour"></dashboard-chart>
+  </div>
+  <div class="col-lg-4 col-sm-12">
+    <dashboard-chart action="wireless:day" format="day" title="Wireless sessions by day"></dashboard-chart>
+  </div>
+  <div ng-show="is-library">
+    <div class="col-lg-4 col-sm-12">
+      <dashboard-chart action="wireless:ssid" title="Wireless sessions by SSID"></dashboard-chart>
+    </div>
+    <div class="col-lg-4 col-sm-12">
+      <dashboard-chart action="wireless:ap" title="Wireless sessions by Access Point"></dashboard-chart>
+    </div>
+  </div>
+  <div class="col-lg-4 col-sm-12">
+    <dashboard-chart action="pharos:hour" format="hour" title="Pharos computer uses by hour"></dashboard-chart>
+  </div>
+  <div class="col-lg-4 col-sm-12">
+    <dashboard-chart action="pharos:day" format="day" title="Pharos computer uses by day"></dashboard-chart>
+  </div>
+</div>

@@ -1,0 +1,48 @@
+<div class="container" ng-controller="HomeCtrl">
+  <div class="row">
+    <div class="col-md-6">
+      <ul class="nav nav-pills" id="home-sections">
+        <li role="presentation" section="summary"><a ng-click="selectSection($event, 'summary')">Summary</a></li>
+        <li role="presentation" section="ils"><a ng-click="selectSection($event, 'ils')">ILS</a></li>
+        <li role="presentation" section="ematerials"><a ng-click="selectSection($event, 'ematerials')">E-materials</a></li>
+        <li role="presentation" section="technology"><a ng-click="selectSection($event, 'technology')">Technology</a></li>
+      </ul>
+    </div>
+    <div class="col-md-3">
+      <div class="btn-group pull-right">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+          {{selectedLibrary.name}} <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu dropdown-scrollable">
+          <li ng-repeat="library in libraries"><a ng-click="selectLibrary(library)">{{library.name}}</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <input date-range-picker class="form-control date-picker" type="text" ng-model="datepicker.date" options="datepicker.options" >
+    </div>
+  </div>
+  <div style="height: 20px"></div>
+  <div ng-switch="section">
+    <dashboard-section-summary ng-switch-when="summary"></dashboard-section-summary>
+    <dashboard-section-ils ng-switch-when="ils"></dashboard-section-ils>
+    <dashboard-section-ematerials ng-switch-when="ematerials"></dashboard-section-ematerials>
+    <dashboard-section-technology ng-switch-when="technology"></dashboard-section-technology>
+  </div>
+  <div id="chart-image" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="chart-image-title"></h4>
+        </div>
+        <div class="modal-body" id="chart-image-body">
+          <img id="chart-image-image" src="" alt="">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

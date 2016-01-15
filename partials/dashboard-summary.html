@@ -1,0 +1,10 @@
+<div class="summary">
+  <h2>Circulation Summary</h2>
+  <div class="summary-top">
+    <p class="summary-top-label">{{highlight.display}}</p>
+    <p class="summary-top-data">{{highlight.data * 2 | number}}<span ng-bind-html="highlight.waiting"></span></p>
+  </div>
+  <table>
+    <tr ng-repeat="metric in metrics"><th>{{metric.display}}</th><td class="text-right">{{metric.data}}<span ng-bind-html="metric.waiting"></span></td></tr>
+  </table>
+</div>

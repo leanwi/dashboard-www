@@ -1,0 +1,86 @@
+<div class="container-fluid" ng-controller="AdminCtrl">
+  <h2>Dashboard Administration</h2>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Active Jobs</h3>
+        </div>
+        <div class="panel-body">
+          <table class="table">
+            <tr>
+              <th>Job ID</th>
+              <th>Record Type</th>
+              <th>Start Time</th>
+              <th>Updated Time</th>
+              <th>Status</th>
+              <th class="text-right">Records Processed</th>
+            </tr>
+            <tr ng-repeat="j in activeJobs">
+              <td>{{j._id}}</td>
+              <td>{{j.type}}</td>
+              <td>{{j.start | date:'short'}}</td>
+              <td>{{j.updated | date: 'short'}}</td>
+              <td>{{j.state}}</td>
+              <td class="text-right">{{j.processed | number}}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Failed Jobs</h3>
+        </div>
+        <div class="panel-body">
+          <table class="table">
+            <tr>
+              <th>Job ID</th>
+              <th>Record Type</th>
+              <th>Start Time</th>
+              <th>Updated Time</th>
+              <th>Status</th>
+              <th class="text-right">Records Processed</th>
+            </tr>
+            <tr ng-repeat="j in failedJobs">
+              <td>{{j._id}}</td>
+              <td>{{j.type}}</td>
+              <td>{{j.start | date:'short'}}</td>
+              <td>{{j.updated | date: 'short'}}</td>
+              <td>{{j.state}}</td>
+              <td class="text-right">{{j.processed | number}}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Recent Jobs (Last 500)</h3>
+        </div>
+        <div class="panel-body">
+          <table class="table table-condensed">
+            <tr>
+              <th>Job ID</th>
+              <th>Record Type</th>
+              <th>Start Time</th>
+              <th>Updated Time</th>
+              <th>Status</th>
+              <th class="text-right">Records Processed</th>
+            </tr>
+            <tr ng-repeat="j in recentJobs">
+              <td>{{j._id}}</td>
+              <td>{{j.type}}</td>
+              <td>{{j.start | date:'short'}}</td>
+              <td>{{j.updated | date: 'short'}}</td>
+              <td>{{j.state}}</td>
+              <td class="text-right">{{j.processed | number}}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

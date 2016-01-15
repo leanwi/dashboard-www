@@ -1,0 +1,40 @@
+<div class="row">
+  <div class="col-md-4">
+    <div class="widget" ng-controller="CirculationSummaryCtrl">
+      <div class="panel panel-default">
+        <div class="panel-heading">Summary (rank if applicable)</div>
+        <div class="panel-body">
+          <div class="waiting" ng-show="waiting"><i class="fa fa-spinner fa-spin"></i></div>
+          <table>
+            <tr><th>Checkouts</th><td class="text-right">{{checkouts | number}} <span ng-bind="checkoutsRank"></span></td></tr>
+            <tr><th>Checkins</th><td class="text-right">{{checkins | number}} <span ng-bind="checkinsRank"></span></td></tr>
+            <tr><th>Renewals</th><td class="text-right">{{renewals | number}} <span ng-bind="renewalsRank"></span></td></tr>
+            <tr><th>Total Circulation</th><td class="text-right">{{totalcirc | number}} </td></tr>
+            <tr><th>Items Borrowed</th><td class="text-right">{{borrowed | number}} <span ng-bind="borrowedRank"></span></td></tr>
+            <tr><th>Items Lent</th><td class="text-right">{{loaned | number}} <span ng-bind="loanedRank"></span></td></tr>
+            <tr><th>Net Difference</th><td class="text-right">{{net | number}}</td></tr>
+            <tr><th>% Locally-owned Checkouts</th><td class="text-right">{{locallyowned | number:2}}%</td></tr>
+            <tr><th>New Patrons</th><td class="text-right">{{patrons | number}} <span ng-bind="patronsRank"></span></td></tr>
+            <tr><th>New Items</th><td class="text-right">{{items | number}} <span ng-bind="itemsRank"></span></td></tr>
+            <tr><th>Pharos Sessions</th><td class="text-right">{{pharos | number}} <span ng-bind="pharosRank"></span></td></tr>
+            <tr><th>Wireless Sessions</th><td class="text-right">{{wireless | number}} <span ng-bind="wirelessRank"></span></td></tr>
+            <tr><th>Overdrive Checkout</th><td class="text-right">{{overdrive | number}} <span ng-bind="overdriveRank"></span></td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div ng-show="is-library">
+    <div class="col-md-8">
+      <dashboard-chart action="ils-checkout:statgroup,ils-checkin:statgroup,ils-renewal:statgroup" action-names="Checkouts,Checkins,Renewals" type="Table" title="Activity by Terminal" no-toolbar></dashboard-chart>
+    </div>
+  </div>
+  <div ng-hide="is-library">
+    <div class="col-md-4">
+      <dashboard-chart action="ils-checkout:format" title="Checkouts by format" type="Pie"></dashboard-chart>
+    </div>
+    <div class="col-md-4">
+      <dashboard-chart action="overdrive:format" title="Overdrive by format" type="Pie"></dashboard-chart>
+    </div>
+  </div>
+</div>

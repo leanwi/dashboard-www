@@ -1,0 +1,29 @@
+{
+  "name": "dashboard",
+  "version": "0.1.0",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "libs",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.6",
+    "angular": "~1.4.x",
+    "angular-route": "~1.4.x",
+    "angular-chart.js": "~0.8.8",
+    "Chart.js": "~1.0.2",
+    "underscore": "~1.8.3",
+    "moment": "~2.10.6",
+    "font-awesome": "~4.5.0",
+    "jquery": "~2.1.4",
+    "bootstrap-daterangepicker": "~2.1.17",
+    "angular-daterangepicker": "~0.2.2"
+  },
+  "resolutions": {
+    "angular": "~1.4.x",
+    "jquery": "~2.1.4"
+  }
+}

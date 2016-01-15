@@ -1,0 +1,13 @@
+<div class="footer" ng-controller="FooterCtrl">
+  <div class="container">
+    <p class="text-muted">
+      <ul class="pull-left list-inline">
+        <li ng-show="showMenu"><a href="#/admin">Administration</a></li> 
+        <li ng-hide="showMenu"><a href="#/login">Login</a></li>
+        <li ng-show="showMenu"><a href="javascript:" ng-click="logout()">Logout</a>
+      </ul>
+
+      <a class="pull-right" href="http://www.iflsweb.org" target="_blank">Indianhead Federated Library System</a>
+    </p>
+  </div>
+</div>
