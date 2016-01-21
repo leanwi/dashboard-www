@@ -18,66 +18,64 @@ myApp.controller("FooterCtrl", ['$scope', 'UserAuthFactory',
 
 myApp.controller("CirculationTimeSeriesCtrl", ['$scope', 'chartDataFactory',
   function($scope, chartDataFactory) {
-    var metrics = [
+    var initialDate = true;
+    var initialCode = true;
+    $scope.metrics = [
       {metric: 'ils-checkout:total', name: 'Checkouts'},
+      {metric: 'ils-checkin:total', name: 'Checkins'},
       {metric: 'ils-renewal:total', name: 'Renewals'},
+      {metric: 'ils-borrowed:total', name: 'Items Borrowed'},
+      {metric: 'ils-lent:total', name: 'Items Lent'},
+      {metric: 'ils-item-record:total', name: 'New Items'},
+      {metric: 'ils-patron-record:total', name: 'New Patrons'},
       {metric: 'pharos:total', name: 'Pharos'},
       {metric: 'wireless:total', name: 'Wireless'},
       {metric: 'overdrive:total', name: 'Overdrive'}
     ];
-    var dates = _.map(new Array(12), function(item, index) {
-      return {
-        start: moment().subtract('months', index + 1).startOf('month').format('MM-DD-YYYY'),
-        end: moment().subtract('months', index + 1).endOf('month').format('MM-DD-YYYY')
-      };
-    }).reverse();
-    var def = {series: []};
+    $scope.selectedAction = {metric: 'ils-checkout:total', name: 'Checkouts'};
     $scope.options = {};
     $scope.options.id =  'chart-home-comparisons';
     $scope.options.type = "Line";
-    $scope.options.legend = true;
+    $scope.options.legend = false;
+    $scope.$watch('selectedAction', init);
+    $scope.$watch('$parent.datepicker.date', function(date) {
+      if(initialDate) {initialDate = false;}
+      else {init();}
+    });
+    $scope.$watch('$parent.code', function(code) {
+      if(initialCode){initialCode = false;}
+      else {init();}
+    });
         
-    $scope.options.labels = _.map(dates, function(date){
-      return moment(date.start, 'MM-DD-YYYY').format('MMMM YYYY');
-    });
-    $scope.options.series = _.map(metrics, function(metric) {
-      return metric.name;
-    });
-    
-    _.each(metrics, function(metric, metricIndex) {
+    function init() {
+      var def = {series: []};
+      var dates = _.map(new Array(12), function(item, index) {
+        return {
+          start: moment($scope.$parent.datepicker.date.endDate, 'MM-DD-YYYY').subtract('months', index).startOf('month').format('MM-DD-YYYY'),
+          end: moment($scope.$parent.datepicker.date.endDate, 'MM-DD-YYYY').subtract('months', index).endOf('month').format('MM-DD-YYYY')
+        };
+      }).reverse();
+      $scope.options.data = [];
+      $scope.options.labels = _.map(dates, function(date){return moment(date.start, 'MM-DD-YYYY').format('MMMM YYYY');});
+
       _.each(dates, function(date, dateIndex) {        
         def.series.push({
           code: $scope.$parent.code,
           start: date.start,
           end: date.end,
-          action: metric.metric
+          action: $scope.selectedAction.metric
         });
       });
-    });
-    chartDataFactory.getData(def).then(function(data) {
-      $scope.options.data = dice(_.map(data, function(response) {
-        return response.data[0];
-      }), dates.length);
-    });
-    
-    function dice(origArray, size) {
-      return getChunk(origArray, [], 0);
-      
-      function getChunk(rest, newArray, dimension) {
-        if(!_.isEmpty(rest)) {
-          newArray[dimension] = _.first(rest, size);
-          console.log(dimension);
-          return getChunk(_.rest(rest, size), newArray, dimension + 1);
-        }
-        console.log(newArray);
-        return newArray;
-      }
+
+      chartDataFactory.getData(def, $scope).then(function(data) {
+        $scope.options.data = [_.map(data, function(response) {return response.data[0];})];
+      });
     }
   }
 ]);
 
-myApp.controller("CirculationSummaryCtrl", ['$scope', '$sce', 'summaryFactory',
-  function($scope, $sce, summaryFactory) {
+myApp.controller("CirculationSummaryCtrl", ['$scope', 'summaryFactory',
+  function($scope, summaryFactory) {
     summaryFactory.watch($scope, init);
     var placeholders = [
       'checkouts', 
@@ -97,7 +95,6 @@ myApp.controller("CirculationSummaryCtrl", ['$scope', '$sce', 'summaryFactory',
         $scope.totalcirc = $scope.checkouts + $scope.renewals;
         $scope.net = $scope.loaned - $scope.borrowed;
         $scope.locallyowned = ($scope.checkouts - $scope.borrowed) / $scope.checkouts * 100;
-        $scope.waiting = false;
       }
       else {
         $scope.totalcirc = null;
@@ -107,7 +104,6 @@ myApp.controller("CirculationSummaryCtrl", ['$scope', '$sce', 'summaryFactory',
     });
     
     function init() {
-      $scope.waiting = true;
       summaryFactory.getAction($scope, 'ils-checkout:total', 'checkouts');
       summaryFactory.getAction($scope, 'ils-checkin:total', 'checkins');
       summaryFactory.getAction($scope, 'ils-renewal:total', 'renewals');

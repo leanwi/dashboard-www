@@ -43,62 +43,6 @@ myApp.directive('dashboardSectionTechnology', function() {
   return directive;
 });
 
-// myApp.directive('dashboardSummary', function() {
-//   var directive = {
-//     restrict: 'E',
-//     scope: {},
-//     controller: function($scope, $controller, $attrs, $http, $filter, $sce, chartDataFactory) {
-//       renderSummary();
-//       $scope.$watch('$parent.code', renderSummary);
-//       $scope.$watch('$parent.datepicker.date', renderSummary);
-      
-//       function renderSummary() {
-//         var metrics = $attrs.metrics.split(',');
-//         var metricDisplayNames = [];
-//         if($attrs.metricDisplayNames) {
-//           metricDisplayNames = $attrs.metricDisplayNames.split(',');
-//         }
-        
-//         $scope.highlight = {
-//           display: _.first(metricDisplayNames) || _.first(metrics),
-//           waiting: $sce.trustAsHtml('<i class="fa fa-spinner fa-spin"></i>')
-//         };
-        
-//         chartDataFactory.getData({
-//           start: moment($scope.$parent.datepicker.date.startDate).format('MM-DD-YYYY'),
-//           end: moment($scope.$parent.datepicker.date.endDate).format('MM-DD-YYYY'),
-//           code: $scope.$parent.code,
-//           action: _.first(metrics)
-//         }).then(function(data) {
-//           $scope.highlight.waiting = '';
-//           $scope.highlight.data = data.data[0];
-//         });
-
-//         $scope.metrics = _.map(_.rest(metrics), function(metric, index) {
-//           return {name: metric, display: metricDisplayNames[index + 1] || metric};
-//         });
-        
-//         _.each($scope.metrics, function(metric, index) {
-//           $scope.metrics[index].waiting = $sce.trustAsHtml('<i class="fa fa-spinner fa-spin"></i>');
-//           var options = {};
-//           options.start = moment($scope.$parent.datepicker.date.startDate).format('MM-DD-YYYY');
-//           options.end = moment($scope.$parent.datepicker.date.endDate).format('MM-DD-YYYY');
-//           options.code = $scope.$parent.code;
-//           options.action = metric.name;
-          
-//           chartDataFactory.getData(options).then(function(data) {
-//             $scope.metrics[index].waiting = '';
-//             $scope.metrics[index].data = $filter('number')(data.data[0]);
-//           });
-//         })        
-//       } 
-//     },
-//     templateUrl: 'partials/dashboard-summary.html'
-//   };
-  
-//   return directive;
-// });
-
 myApp.directive('dashboardChart', function() {
   var counter = 0;
   var directive = {
@@ -172,7 +116,7 @@ myApp.directive('dashboardChart', function() {
       
       function getData() {
         createChartDefinition();
-        chartDataFactory.getData(chart.options).then(function(data) {
+        chartDataFactory.getData(chart.options, $scope).then(function(data) {
           chart.data = data;
           var process = _.compose(
             chartDataFactory.format, 

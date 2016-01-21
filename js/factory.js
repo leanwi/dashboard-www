@@ -71,7 +71,7 @@ myApp.factory('summaryFactory', function($sce, chartDataFactory) {
       code: scope.$parent.code,
       action: action
     }]};
-    chartDataFactory.getData(def).then(function(data) {
+    chartDataFactory.getData(def, scope).then(function(data) {
       scope[field] = data[0].data[0] || 0;
       if(data[0].data[1]) {scope[field + 'Rank'] = '(' + data[0].data[1] + ')';}
     });
@@ -110,7 +110,8 @@ myApp.factory('chartDataFactory', function($http, $q, apiUrl, $filter) {
     }
   };
   
-  service.getData = function(dataDef) {
+  service.getData = function(dataDef, scope) {
+    scope.waiting = true;
     var defer = $q.defer();
     var resultArray = _.map(dataDef.series, function(s){return null;});
     _.each(dataDef.series, handleDef);
@@ -123,6 +124,7 @@ myApp.factory('chartDataFactory', function($http, $q, apiUrl, $filter) {
       }).success(function(data) {
         resultArray[index] = data;
         if(haveReceivedAllResponses()) {
+          scope.waiting = false;
           defer.resolve(resultArray);
         }
       }).error(function() {
