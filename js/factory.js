@@ -1,4 +1,3 @@
-/* global Chart */
 myApp.factory('libraryListFactory', function($rootScope, $http, apiUrl) {
   var service = {};
   var _libraries;
@@ -66,15 +65,15 @@ myApp.factory('summaryFactory', function($sce, chartDataFactory) {
   service.getAction = function(scope, action, field) {
     scope[field] = null;  
     scope[field + 'Rank'] = null;
-    var actionOptions = {
+    var def = {series: [{
       start: moment(scope.$parent.datepicker.date.startDate).format('MM-DD-YYYY'),
       end: moment(scope.$parent.datepicker.date.endDate).format('MM-DD-YYYY'),
       code: scope.$parent.code,
       action: action
-    };
-    chartDataFactory.getData(actionOptions, action).then(function(data) {
-      scope[field] = data.data[0] || 0;
-      if(data.data[1]) {scope[field + 'Rank'] = '(' + data.data[1] + ')';}
+    }]};
+    chartDataFactory.getData(def).then(function(data) {
+      scope[field] = data[0].data[0] || 0;
+      if(data[0].data[1]) {scope[field + 'Rank'] = '(' + data[0].data[1] + ')';}
     });
   };
   
@@ -82,15 +81,15 @@ myApp.factory('summaryFactory', function($sce, chartDataFactory) {
 });
   
 
-myApp.factory('chartDataFactory', function($http, $q, apiUrl, $timeout, $filter) {
+myApp.factory('chartDataFactory', function($http, $q, apiUrl, $filter) {
   var service = {};
   var _baseUrl = apiUrl + 'actions';
   var _specialCharts = ['Pie', 'Doughnut', 'PolarArea'];
 
-  var constructUrl = function(options, action) {
+  var constructUrl = function(options) {
     var urlArray = [
       _baseUrl,
-      action,
+      options.action,
       options.start,
       options.end,
       options.code
@@ -98,90 +97,84 @@ myApp.factory('chartDataFactory', function($http, $q, apiUrl, $timeout, $filter)
     return _.filter(urlArray, function(part) {return part != undefined;}).join('/');
   }
 
-  formatDays = function(a) {
-    return _.map(a, function(item) {
-      return moment(item, 'd').format('ddd');
-    });
-  };
+  service.format = function(chart) {
+    return chart.options.format ? format(chart.options.format) : chart;
 
-  var formatHours = function(a) {
-    return _.map(a, function(item) {
-      return moment(item, 'H').format('h a');
-    });
-  };
-
-  var format = function(a, f) {
-    if(f === 'day') {
-      return formatDays(a);
-    }
-    else if(f === 'hour') {
-      return formatHours(a);
-    }
-    else {
-      return a;
+    function format(type) {
+      var formats = {
+        day: function(item) {return moment(item, 'd').format('ddd');},
+        hour: function(item) {return moment(item, 'H').format('h a');}
+      };
+      chart.data.labels = _.map(chart.data.labels, formats[type]);
+      return chart;
     }
   };
   
-  var sortByValues = function(data) {
-    var unsortedArray = _.map(data.labels, function(label, index) {
-      return [label, data.data[index]];
-    });
-    var sortedArray = _.sortBy(unsortedArray, function(a) {
-      return -a[1];
-    });
-    return {
-      labels: _.map(sortedArray, function(item) {return item[0];}), 
-      data: _.map(sortedArray, function(item) {return item[1];})
-    };
-  };
-  
-  var limit = function(data, limit) {
-    var sortedData = sortByValues(data);
-    var limitedData = {
-      labels: _.first(sortedData.labels, limit),
-      data: _.first(sortedData.data, limit)
-    };
-    limitedData.labels.push('Other');
-    limitedData.data.push(_.reduce(_.rest(sortedData.data, limit), function(memo, num) {
-      return memo + num;
-    }, 0));
-    return limitedData;
-  };
-  
-  var group = function(data, groups) {
-    var groupDef = groups.split(',');
-    var groups = _.map(groupDef, function(group, index) {
-      if(index === 0) {
-        return {
-          label: '< ' + group,
-          value: makeGroup(0, parseInt(group)) 
-        };
-      }
-      else if(index === groupDef.length - 1) {
-        return {
-          label: group + ' >',
-          value: makeGroup(group, _.max(data.labels, function(label) {return parseInt(label);}))
-        }
-      }
-      else {
-        var limits = group.split('-');
-        return {
-          label: limits[0] + ' - ' + limits[1],
-          value: makeGroup(limits[0], limits[1])
-        }
-      }
-    });
-    return {
-      labels: _.map(groups, function(group) {return group.label;}),
-      data: _.map(groups, function(group) {return group.value;})
-    };
+  service.getData = function(dataDef) {
+    var defer = $q.defer();
+    var resultArray = _.map(dataDef.series, function(s){return null;});
+    _.each(dataDef.series, handleDef);
+    return defer.promise;
     
+    function handleDef(def, index) {
+      $http({
+        method: 'get',
+        url: constructUrl(def)
+      }).success(function(data) {
+        resultArray[index] = data;
+        if(haveReceivedAllResponses()) {
+          defer.resolve(resultArray);
+        }
+      }).error(function() {
+        defer.reject('There was an error accessing the api.');  
+      });      
+    }
+    
+    function haveReceivedAllResponses() {
+      var retVal = true
+      //Received all responses if resultArray doesn't have any null items
+      _.each(resultArray, function(r){if (_.isNull(r)){retVal = false;}});
+      return retVal;
+    }
+  }; 
+  
+  service.group = function(chart) {
+    return chart.options.groups ? makeGroups() : chart;
+    
+    function makeGroups() {
+      var groupDef = chart.options.groups.split(',');
+      var groups = _.map(groupDef, function(group, index) {
+        if(index === 0) {
+          return {
+            label: '< ' + group,
+            value: makeGroup(0, parseInt(group)) 
+          };
+        }
+        else if(index === groupDef.length - 1) {
+          return {
+            label: group + ' >',
+            value: makeGroup(group, _.max(chart.data.labels, function(label) {return parseInt(label);}))
+          }
+        }
+        else {
+          var limits = group.split('-');
+          return {
+            label: limits[0] + ' - ' + limits[1],
+            value: makeGroup(limits[0], limits[1])
+          }
+        }
+      });
+      chart.data.labels = _.map(groups, function(group) {return group.label;});
+      chart.data.data = [_.map(groups, function(group) {return group.value;})];
+      return chart;
+    }
+
     function makeGroup(min, max) {
-      return _.reduce(data.data, function(memo, num, index) {
-        if(!data.labels[index]) {
+      return _.reduce(chart.data.data[0], function(memo, num, index) {
+        if(!chart.data.labels[index]) {
           return memo;
         }
-        var label = parseInt(data.labels[index]);
+        var label = parseInt(chart.data.labels[index]);
         if(label >= min && label <= max) {
           return memo + num;
         }
@@ -192,27 +185,79 @@ myApp.factory('chartDataFactory', function($http, $q, apiUrl, $timeout, $filter)
     }
   };
   
-  var normalizeSeries = function(options, data) {
+  service.handleSpecialCharts = function(chart) {
+    var limitValue = 5;
+    return isSpecialChart() ? handleSpecialChart() : chart;
+    
+    function handleSpecialChart() {
+      var tmpChart = angular.merge({}, chart);
+      tmpChart.data = limit(tmpChart.data);
+      tmpChart.options.legend = true;
+      return tmpChart;
+    }
+    
+    function isSpecialChart() {
+      if(_.contains(_specialCharts, chart.options.type)) {
+        return true;
+      }
+      return false;
+    }
+    
+    function limit(data) {
+      if(data.data[0].length > limitValue) {
+        var sortedData = sort(data);
+        data.data = _.first(sortedData.data, limitValue);
+        data.labels = _.first(sortedData.labels, limitValue);
+        data.labels.push('Other');
+        data.data.push(_.reduce(_.rest(sortedData.data, limitValue), function(memo, num){return memo + num;}, 0));
+      }
+      else {
+        data.data = data.data[0];
+      }
+      return data;
+    }
+    
+    function sort(data) {
+      var unsortedArray = _.map(data.labels, function(label, index) {return [label, data.data[0][index]];});
+      var sortedArray = _.sortBy(unsortedArray, function(a) {return -a[1];});
+      data.labels = _.map(sortedArray, function(item) {return item[0];});
+      data.data = _.map(sortedArray, function(item) {return item[1];});
+      return data;
+    }
+  };
+  
+  service.insertSelectedDateAndCode = function(defs, selected) {
+    return _.map(defs, function(def) {
+      if(!def.code) {def.code = selected.code;}
+      if(!def.start) {def.start = selected.start;}
+      if(!def.end) {def.end = selected.end;}
+      return def;
+    });
+  };
+  
+  service.normalizeSeries = function(chart) {
     var newData = {};
-    newData.series = _.pluck(data, 'display');
-    newData.labels = _.sortBy(_.unique(_.flatten(_.map(data, function(line){return line.labels;}))));
+    var actions = _.pluck(chart.data, 'url');
+    newData.series = _.pluck(chart.options.series, 'name');
+    newData.labels = _.sortBy(_.unique(_.flatten(_.map(chart.data, function(line){return line.labels;}))));
     newData.data = makeDataArray(newData.series, newData.labels);
-    return newData;
+    chart.data = newData;
+    return chart;
     
     function makeDataArray() {
       var tmpHash = {};
       _.each(newData.labels, function(label) {
-        _.each(newData.series, function(series) {
-          if(!tmpHash[series]) {
-            tmpHash[series] = {};
+        _.each(actions, function(action) {
+          if(!tmpHash[action]) {
+            tmpHash[action] = {};
           }
-          tmpHash[series][label] = 0;
+          tmpHash[action][label] = 0;
         });
       });
       
-      _.each(data, function(action, actionIndex) {
+      _.each(chart.data, function(action, actionIndex) {
         _.each(action.labels, function(label, index) {
-          tmpHash[action.display][label] = data[actionIndex].data[index];
+          tmpHash[action.url][label] = chart.data[actionIndex].data[index];
         });
       });      
       
@@ -220,74 +265,7 @@ myApp.factory('chartDataFactory', function($http, $q, apiUrl, $timeout, $filter)
         return _.toArray(action);
       });
     }
-  };
-
-  service.getData = function(options, action) {
-    var deferred = $q.defer()
-    var url = constructUrl(options, action);
-    
-    $http({
-      method: 'get',
-      url: url
-    }).success(function(data) {
-      data.labels = format(data.labels, options.format);
-      deferred.resolve(data);
-    }).error(function() {
-      deferred.reject('There was an error accessing the api.');  
-    });
-
-    return deferred.promise;
-  };
-
-  service.processData = function(options, data) {
-    options.data = null;
-    options.labels = null;
-    options.series = null;
-    
-    var series = false;
-    if(data.length > 1) {
-      series = true;
-      data = normalizeSeries(options, data);
-    }
-    else {
-      data = data[0];
-    }
-    $timeout(function() {
-      options.labels = data.labels;
-      if(options.groups) {
-        var groupedData = group(data, options.groups);
-        options.labels = groupedData.labels;
-        options.data = [groupedData.data];
-      }
-      else if(_.contains(_specialCharts, options.type)) {
-        var limitedData;
-        if(data.data.length > 5) {
-          limitedData = limit(data, 5);
-        }
-        else {
-          limitedData = data;
-        }
-        
-        options.legend = true;
-        options.labels = limitedData.labels;
-        options.data = limitedData.data;
-      }
-      else {
-        console.log(data);
-        $('#' + options.id).siblings('chart-legend').remove();
-        options.legend = false;
-        if(series) {
-          options.data = data.data;
-          options.series = data.series;
-        }
-        else {
-          options.data = [data.data];
-        }
-      }      
-    });
-
-    return options;
-  };
+  };  
 
   Chart.Type.extend({
     name: 'Table',
@@ -302,7 +280,6 @@ myApp.factory('chartDataFactory', function($http, $q, apiUrl, $timeout, $filter)
     },
     draw: function(data) {
       var html = '<div class=\'table-container\'><table>';
-      console.log(this);
       if(data.datasets.length > 1) {
         html += '<thead><tr><td></td>'
         _.each(data.datasets, function(set) {

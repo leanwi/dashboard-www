@@ -16,6 +16,66 @@ myApp.controller("FooterCtrl", ['$scope', 'UserAuthFactory',
   }
 ]);
 
+myApp.controller("CirculationTimeSeriesCtrl", ['$scope', 'chartDataFactory',
+  function($scope, chartDataFactory) {
+    var metrics = [
+      {metric: 'ils-checkout:total', name: 'Checkouts'},
+      {metric: 'ils-renewal:total', name: 'Renewals'},
+      {metric: 'pharos:total', name: 'Pharos'},
+      {metric: 'wireless:total', name: 'Wireless'},
+      {metric: 'overdrive:total', name: 'Overdrive'}
+    ];
+    var dates = _.map(new Array(12), function(item, index) {
+      return {
+        start: moment().subtract('months', index + 1).startOf('month').format('MM-DD-YYYY'),
+        end: moment().subtract('months', index + 1).endOf('month').format('MM-DD-YYYY')
+      };
+    }).reverse();
+    var def = {series: []};
+    $scope.options = {};
+    $scope.options.id =  'chart-home-comparisons';
+    $scope.options.type = "Line";
+    $scope.options.legend = true;
+        
+    $scope.options.labels = _.map(dates, function(date){
+      return moment(date.start, 'MM-DD-YYYY').format('MMMM YYYY');
+    });
+    $scope.options.series = _.map(metrics, function(metric) {
+      return metric.name;
+    });
+    
+    _.each(metrics, function(metric, metricIndex) {
+      _.each(dates, function(date, dateIndex) {        
+        def.series.push({
+          code: $scope.$parent.code,
+          start: date.start,
+          end: date.end,
+          action: metric.metric
+        });
+      });
+    });
+    chartDataFactory.getData(def).then(function(data) {
+      $scope.options.data = dice(_.map(data, function(response) {
+        return response.data[0];
+      }), dates.length);
+    });
+    
+    function dice(origArray, size) {
+      return getChunk(origArray, [], 0);
+      
+      function getChunk(rest, newArray, dimension) {
+        if(!_.isEmpty(rest)) {
+          newArray[dimension] = _.first(rest, size);
+          console.log(dimension);
+          return getChunk(_.rest(rest, size), newArray, dimension + 1);
+        }
+        console.log(newArray);
+        return newArray;
+      }
+    }
+  }
+]);
+
 myApp.controller("CirculationSummaryCtrl", ['$scope', '$sce', 'summaryFactory',
   function($scope, $sce, summaryFactory) {
     summaryFactory.watch($scope, init);
@@ -62,29 +122,6 @@ myApp.controller("CirculationSummaryCtrl", ['$scope', '$sce', 'summaryFactory',
   }
 ]);
 
-myApp.controller("TerminalListCtrl", ['$scope', '$sce', 'chartDataFactory',
-  function($scope, $sce, chartDataFactory) {
-    init();
-    var checkinOpts = {};
-    var checkoutOpts = {};
-    var renewalOpts = {};
-    
-    function init() {
-      $scope.waiting = true;
-      getActions('ils-checkin:statgroup');
-    
-    }
-    
-    function getActions(action) {
-      var opts = {};
-      opts.start = moment($scope.$parent.datepicker.date.startDate).format('MM-DD-YYYY');
-      opts.end = moment($scope.$parent.datepicker.date.endDate).format('MM-DD-YYYY');
-      opts.code = $scope.$parent.code;
-      opts.action = action;
-      chartDataFactory.getData(opts);
-    }
-  }
-]);
 
 myApp.controller("HomeCtrl", ['$scope', '$location', 'libraryListFactory',
   function($scope, $location, libraryListFactory) {

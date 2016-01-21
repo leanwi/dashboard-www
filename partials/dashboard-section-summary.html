@@ -26,15 +26,20 @@
   </div>
   <div ng-show="is-library">
     <div class="col-md-8">
-      <dashboard-chart action="ils-checkout:statgroup,ils-checkin:statgroup,ils-renewal:statgroup" action-names="Checkouts,Checkins,Renewals" type="Table" title="Activity by Terminal" no-toolbar></dashboard-chart>
+      <dashboard-chart series='[{"action":"ils-checkout:statgroup","name":"Checkouts"},{"action":"ils-checkin:statgroup","name":"Checkins"},{"action":"ils-renewal:statgroup","name":"Renewals"}]' type="Table" title="Activity by Terminal" no-toolbar></dashboard-chart>
     </div>
   </div>
   <div ng-hide="is-library">
-    <div class="col-md-4">
-      <dashboard-chart action="ils-checkout:format" title="Checkouts by format" type="Pie"></dashboard-chart>
-    </div>
-    <div class="col-md-4">
-      <dashboard-chart action="overdrive:format" title="Overdrive by format" type="Pie"></dashboard-chart>
+    <div class="col-md-8">
+      <div class="widget" ng-controller="CirculationTimeSeriesCtrl">
+        <div class="panel panel-default">
+          <div class="panel-heading">Past 12 Months</div>
+          <div class="panel-body">
+            <div class="waiting" ng-show="waiting"><i class="fa fa-spinner fa-spin"></i></div>
+            <canvas id="{{options.id}}" class="chart-base" chart-legend="{{options.legend}}" chart-type="options.type" chart-data="options.data" chart-labels="options.labels" chart-series="options.series"></canvas>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
