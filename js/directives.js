@@ -68,14 +68,12 @@ myApp.directive('dashboardChart', function() {
         chart.options.type = type;
         processData();
       };
-
       $scope.makeImage = function() {
-        var img = $('#' + $scope.options.id)[0].toDataURL();
-        var title = [$scope.options.title, ' (', moment($scope.$parent.datepicker.date.startDate).format('MM-DD-YYYY'), ' - ', moment($scope.$parent.datepicker.date.endDate).format('MM-DD-YYYY'), ')'].join('');
-        $('#chart-image-title').text(title);
-        $('#chart-image-image').attr('src', img);
-        $('#chart-image-image').attr('alt', title);
-        $('#chart-image').modal();
+        html2canvas(document.getElementById($scope.options.id + '-container'), {
+          onrendered: function(canvas) {
+            window.location.href=canvas.toDataURL();
+          }
+        });
       }
       
       $scope.$watch('$parent.code', function(code) {
