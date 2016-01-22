@@ -75,6 +75,13 @@ myApp.directive('dashboardChart', function() {
           }
         });
       }
+      $scope.exportExcel = function() {
+        var form = $('<form method="POST" enctype="application/x-www-form-urlencoded" target="_blank" action="http://localhost:3000/api/v1/util/charttoexcel">');
+        form.append($("<input type='hidden' name='chart' value='" + angular.toJson(chart) + "'>"));
+        $('body').append(form);
+        console.log(form);
+        form.submit();
+      }
       
       $scope.$watch('$parent.code', function(code) {
         if(initialCode) {
