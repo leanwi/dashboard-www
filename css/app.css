@@ -28,9 +28,11 @@ code {
 }
 
 .waiting {
-  position: absolute;
   text-align: center;
-  width: 100%;
+}
+
+.nodata {
+  text-align: center;
 }
 
 header.masthead {

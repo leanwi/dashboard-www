@@ -123,15 +123,21 @@ myApp.directive('dashboardChart', function() {
       function getData() {
         createChartDefinition();
         chartDataFactory.getData(chart.options, $scope).then(function(data) {
-          chart.data = data;
-          var process = _.compose(
-            chartDataFactory.format, 
-            chartDataFactory.group,
-            chartDataFactory.limit, 
-            chartDataFactory.normalizeSeries
-          );
-          chart = process(chart);
-          processData();
+          if(data[0].data.length > 0) {
+            $scope.nodata = false;
+            chart.data = data;
+            var process = _.compose(
+              chartDataFactory.format, 
+              chartDataFactory.group,
+              chartDataFactory.limit, 
+              chartDataFactory.normalizeSeries
+            );
+            chart = process(chart);
+            processData();
+          }
+          else {
+            $scope.nodata = true;
+          }
         });                  
       }
       

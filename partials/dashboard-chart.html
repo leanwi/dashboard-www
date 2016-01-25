@@ -3,7 +3,8 @@
     <div class="panel-heading">{{options.title}}</div>
     <div class="panel-body">
       <div class="waiting" ng-show="waiting"><i class="fa fa-spinner fa-spin"></i></div>
-      <div ng-show="showChart">
+      <div class="nodata bg-info" ng-show="nodata">No data</div>
+      <div ng-show="showChart" ng-hide="nodata">
         <div class="chart-container">
           <canvas id="{{options.id}}" class="chart-base" chart-legend="{{options.legend}}" chart-type="options.type" chart-data="options.data" chart-labels="options.labels" chart-series="options.series"></canvas>
           <div id="{{options.id}}-table" style="display: none;"></div>
