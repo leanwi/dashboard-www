@@ -193,7 +193,9 @@ myApp.factory('chartDataFactory', function($http, $q, apiUrl, $filter) {
     
     function handleSpecialChart() {
       var tmpChart = angular.merge({}, chart);
-      tmpChart.data = limit(tmpChart.data);
+      tmpChart.options.limit = limitValue;
+      tmpChart = service.limit(tmpChart);
+      tmpChart.data.data = tmpChart.data.data[0];
       tmpChart.options.legend = true;
       return tmpChart;
     }
@@ -204,19 +206,30 @@ myApp.factory('chartDataFactory', function($http, $q, apiUrl, $filter) {
       }
       return false;
     }
+  };
+  
+  service.limit = function(chart) {
+    return shouldLimit() ? limit() : chart;
     
-    function limit(data) {
-      if(data.data[0].length > limitValue) {
-        var sortedData = sort(data);
-        data.data = _.first(sortedData.data, limitValue);
-        data.labels = _.first(sortedData.labels, limitValue);
-        data.labels.push('Other');
-        data.data.push(_.reduce(_.rest(sortedData.data, limitValue), function(memo, num){return memo + num;}, 0));
+    function shouldLimit() {
+      if(chart.options.limit) {
+        return true;
       }
-      else {
-        data.data = data.data[0];
+      return false;
+    }
+    
+    function limit() {
+      if(chart.data.data[0].length > chart.options.limit) {
+        var sortedData = sort(chart.data);
+        var first = _.first(sortedData.data, chart.options.limit);
+        var last = _.reduce(_.rest(sortedData.data, chart.options.limit), function(memo, num){return memo + num;}, 0);
+        chart.data.data = first;
+        chart.data.data.push(last);
+        chart.data.labels = _.first(sortedData.labels, chart.options.limit);
+        chart.data.labels.push('Other');
+        chart.data.data = [chart.data.data];;
       }
-      return data;
+      return chart;
     }
     
     function sort(data) {
@@ -225,8 +238,10 @@ myApp.factory('chartDataFactory', function($http, $q, apiUrl, $filter) {
       data.labels = _.map(sortedArray, function(item) {return item[0];});
       data.data = _.map(sortedArray, function(item) {return item[1];});
       return data;
-    }
-  };
+    }    
+  }
+  
+  
   
   service.insertSelectedDateAndCode = function(defs, selected) {
     return _.map(defs, function(def) {

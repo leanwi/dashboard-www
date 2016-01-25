@@ -117,6 +117,7 @@ myApp.directive('dashboardChart', function() {
         chart.options.groups = $attrs.groups;
         chart.options.type = $attrs.type || 'Bar'
         chart.options.legend = $attrs.legend || false;
+        chart.options.limit = $attrs.limit;
       }     
       
       function getData() {
@@ -125,7 +126,8 @@ myApp.directive('dashboardChart', function() {
           chart.data = data;
           var process = _.compose(
             chartDataFactory.format, 
-            chartDataFactory.group, 
+            chartDataFactory.group,
+            chartDataFactory.limit, 
             chartDataFactory.normalizeSeries
           );
           chart = process(chart);
