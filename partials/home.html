@@ -6,6 +6,7 @@
         <li role="presentation" section="ils"><a ng-click="selectSection($event, 'ils')">ILS</a></li>
         <li role="presentation" section="ematerials"><a ng-click="selectSection($event, 'ematerials')">E-materials</a></li>
         <li role="presentation" section="technology"><a ng-click="selectSection($event, 'technology')">Technology</a></li>
+        <li role="presentation" section="website"><a ng-click="selectSection($event, 'website')">Website</a></li>
       </ul>
     </div>
     <div class="col-md-3">
@@ -24,10 +25,137 @@
   </div>
   <div style="height: 20px"></div>
   <div ng-switch="section">
-    <dashboard-section-summary ng-switch-when="summary"></dashboard-section-summary>
-    <dashboard-section-ils ng-switch-when="ils"></dashboard-section-ils>
-    <dashboard-section-ematerials ng-switch-when="ematerials"></dashboard-section-ematerials>
-    <dashboard-section-technology ng-switch-when="technology"></dashboard-section-technology>
+    <section ng-switch-when="summary">
+      <div class="row">
+        <div class="col-md-4">
+          <div class="widget" ng-controller="CirculationSummaryCtrl">
+            <div class="panel panel-default">
+              <div class="panel-heading">Summary (rank if applicable)</div>
+              <div class="panel-body">
+                <div class="waiting" ng-show="waiting"><i class="fa fa-spinner fa-spin"></i></div>
+                <table>
+                  <tr><th>Checkouts</th><td class="text-right">{{checkouts | number}} <span ng-bind="checkoutsRank"></span></td></tr>
+                  <tr><th>Checkins</th><td class="text-right">{{checkins | number}} <span ng-bind="checkinsRank"></span></td></tr>
+                  <tr><th>Renewals</th><td class="text-right">{{renewals | number}} <span ng-bind="renewalsRank"></span></td></tr>
+                  <tr><th>Total Circulation</th><td class="text-right">{{totalcirc | number}} </td></tr>
+                  <tr><th>Items Borrowed</th><td class="text-right">{{borrowed | number}} <span ng-bind="borrowedRank"></span></td></tr>
+                  <tr><th>Items Lent</th><td class="text-right">{{loaned | number}} <span ng-bind="loanedRank"></span></td></tr>
+                  <tr><th>Net Difference</th><td class="text-right">{{net | number}}</td></tr>
+                  <tr><th>% Locally-owned Checkouts</th><td class="text-right">{{locallyowned | number:2}}%</td></tr>
+                  <tr><th>New Patrons</th><td class="text-right">{{patrons | number}} <span ng-bind="patronsRank"></span></td></tr>
+                  <tr><th>New Items</th><td class="text-right">{{items | number}} <span ng-bind="itemsRank"></span></td></tr>
+                  <tr><th>Pharos Sessions</th><td class="text-right">{{pharos | number}} <span ng-bind="pharosRank"></span></td></tr>
+                  <tr><th>Wireless Sessions</th><td class="text-right">{{wireless | number}} <span ng-bind="wirelessRank"></span></td></tr>
+                  <tr><th>Overdrive Checkout</th><td class="text-right">{{overdrive | number}} <span ng-bind="overdriveRank"></span></td></tr>
+                  <tr><th>Website Visits</th><td class="text-right">{{website | number}} <span ng-bind="websiteRank"></span></td></tr>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-8">
+          <div class="widget" ng-controller="CirculationTimeSeriesCtrl">
+            <div class="panel panel-default">
+              <div class="panel-heading">Past 12 Months - {{selectedAction.name}}</div>
+              <div class="panel-body">
+                <div class="waiting" ng-show="waiting"><i class="fa fa-spinner fa-spin"></i></div>
+                <canvas id="{{options.id}}" class="chart-base" chart-options="options.other" chart-legend="{{options.legend}}" chart-type="options.type" chart-data="options.data" chart-labels="options.labels" chart-series="options.series"></canvas>
+                <div style="text-align: center;">
+                  Choose a stat: <select ng-model="selectedAction" ng-options="metric.name for metric in metrics track by metric.metric"></select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <dashboard-chart series='[{"action":"ils-checkout:statgroup","name":"Checkouts"},{"action":"ils-checkin:statgroup","name":"Checkins"},{"action":"ils-renewal:statgroup","name":"Renewals"}]' type="Table" title="Activity by Terminal"></dashboard-chart>
+        </div>
+      </div>
+    </section>
+    <section ng-switch-when="ils">
+      <div class="row">
+        <div class="col-lg-4 col-sm-12">
+          <dashboard-chart series='[{"action":"ils-checkout:hour"}]' format="hour" title="Checkouts by hour"></dashboard-chart>
+        </div>
+        <div class="col-lg-4 col-sm-12">
+          <dashboard-chart series='[{"action":"ils-checkout:day"}]' format="day" title="Checkouts by day"></dashboard-chart>
+        </div>
+        <div class="col-lg-4 col-sm-12">
+          <dashboard-chart series='[{"action":"ils-checkout:age"}]' title="Checkouts by age" groups="5,6-10,11-14,15-18,19-25,26-40,41-65,66"></dashboard-chart>
+        </div>
+        <div class="col-lg-4 col-sm-12">
+          <dashboard-chart series='[{"action":"ils-checkout:format"}]' title="Checkouts by format" type="Pie"></dashboard-chart>
+        </div>
+        <div class="col-lg-4 col-sm-12">
+          <dashboard-chart series='[{"action":"ils-checkout:act150_loc"}]' title="Checkouts by Act 150 Location" type="Pie"></dashboard-chart>
+        </div>
+        <div class="col-lg-4 col-sm-12">
+          <dashboard-chart series='[{"action":"ils-item-record:day"}]' format="day" title="Item records by day"></dashboard-chart>
+        </div>
+        <div class="col-lg-4 col-sm-12">
+          <dashboard-chart series='[{"action":"ils-patron-record:day"}]' format="day" title="Patron records by day"></dashboard-chart>
+        </div>
+        <div class="col-lg-4 col-sm-12">
+          <dashboard-chart series='[{"action":"ils-item-record:hour"}]' format="hour" title="Item records by hour"></dashboard-chart>
+        </div>
+        <div class="col-lg-4 col-sm-12">
+          <dashboard-chart series='[{"action":"ils-patron-record:hour"}]' format="hour" title="Patron records by hour"></dashboard-chart>
+        </div>
+      </div>
+    </section>
+    <section ng-switch-when="ematerials">
+      <div class="row">
+        <div class="col-lg-4 col-sm-12">
+          <dashboard-chart series='[{"action":"overdrive:day"}]' format="day" title="Overdrive by Day"></dashboard-chart>
+        </div>
+        <div class="col-lg-4 col-sm-12">
+          <dashboard-chart series='[{"action":"overdrive:format"}]' title="Overdrive by Format" type="Pie"></dashboard-chart>
+        </div>
+        <div class="col-lg-4 col-sm-12">
+          <dashboard-chart series='[{"action":"overdrive:group"}]' title="Overdrive by Type" type="Pie"></dashboard-chart>
+        </div>
+      </div>      
+    </section>
+    <section ng-switch-when="technology">
+      <div class="row">
+        <div class="col-lg-4 col-sm-12">
+          <dashboard-chart series='[{"action":"wireless:hour"}]' format="hour" title="Wireless sessions by hour"></dashboard-chart>
+        </div>
+        <div class="col-lg-4 col-sm-12">
+          <dashboard-chart series='[{"action":"wireless:day"}]' format="day" title="Wireless sessions by day"></dashboard-chart>
+        </div>
+        <div ng-show="is-library">
+          <div class="col-lg-4 col-sm-12">
+            <dashboard-chart series='[{"action":"wireless:ssid"}]' title="Wireless sessions by SSID"></dashboard-chart>
+          </div>
+          <div class="col-lg-4 col-sm-12">
+            <dashboard-chart series='[{"action":"wireless:ap"}]' title="Wireless sessions by Access Point"></dashboard-chart>
+          </div>
+        </div>
+        <div class="col-lg-4 col-sm-12">
+          <dashboard-chart series='[{"action":"pharos:hour"}]' format="hour" title="Pharos computer uses by hour"></dashboard-chart>
+        </div>
+        <div class="col-lg-4 col-sm-12">
+          <dashboard-chart series='[{"action":"pharos:day"}]' format="day" title="Pharos computer uses by day"></dashboard-chart>
+        </div>
+      </div>      
+    </section>
+    <section ng-switch-when="website">
+      <div class="row">
+        <div class="col-lg-4 col-sm-12">
+          <dashboard-chart series='[{"action":"website-page:hour"}]' format="hour" title="Website pageviews by hour"></dashboard-chart>
+        </div>
+        <div class="col-lg-4 col-sm-12">
+          <dashboard-chart series='[{"action":"website-page:day"}]' format="day" title="Website pageviews by day"></dashboard-chart>
+        </div>
+        <div class="col-lg-4 col-sm-12">
+          <dashboard-chart series='[{"action":"website-page:page_url"}]' title="Website pageviews by url" type="Table" limit="10"></dashboard-chart>
+        </div>
+        <div class="col-lg-4 col-sm-12">
+          <dashboard-chart series='[{"action":"website-page:page_name"}]' title="Website pageviews by name" type="Table" limit="10"></dashboard-chart>
+        </div>
+        <div class="col-lg-4 col-sm-12">
+          <!--<dashboard-chart series='[{"action":"website-page:device"}]' title="Website pageviews by device"></dashboard-chart>-->
+        </div>
+    </section>
   </div>
   <div id="chart-image" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog">

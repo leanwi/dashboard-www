@@ -168,7 +168,8 @@ myApp.controller("CirculationSummaryCtrl", ['$scope', 'summaryFactory',
       'items', 
       'pharos', 
       'wireless', 
-      'overdrive'
+      'overdrive',
+      'website'
     ];
     
     $scope.$watchGroup(placeholders, function() {
@@ -194,7 +195,8 @@ myApp.controller("CirculationSummaryCtrl", ['$scope', 'summaryFactory',
       summaryFactory.getAction($scope, 'ils-item-record:total', 'items');   
       summaryFactory.getAction($scope, 'pharos:total', 'pharos');
       summaryFactory.getAction($scope, 'wireless:total', 'wireless');      
-      summaryFactory.getAction($scope, 'overdrive:total', 'overdrive');       
+      summaryFactory.getAction($scope, 'overdrive:total', 'overdrive');    
+      summaryFactory.getAction($scope, 'website-page:total', 'website');       
     }    
   }
 ]);
