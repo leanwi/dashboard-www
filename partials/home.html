@@ -14,13 +14,13 @@
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
           {{selectedLibrary.name}} <span class="caret"></span>
         </button>
-        <ul class="dropdown-menu dropdown-scrollable">
+        <ul class="dropdown-menu dropdown-scrollable library-list">
           <li ng-repeat="library in libraries"><a ng-click="selectLibrary(library)">{{library.name}}</a></li>
         </ul>
       </div>
     </div>
     <div class="col-md-3">
-      <input date-range-picker class="form-control date-picker" type="text" ng-model="datepicker.date" options="datepicker.options" >
+      <input date-range-picker class="form-control date-picker" type="text" readonly ng-model="datepicker.date" options="datepicker.options" >
     </div>
   </div>
   <div style="height: 20px"></div>

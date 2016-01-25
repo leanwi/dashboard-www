@@ -37,6 +37,11 @@ header.masthead {
   background: #cecece;
 }
 
+.library-list {
+  max-height: 300px;
+  overflow: scroll;
+}
+
 .widget .table-container {
   overflow: scroll;
   height: 280px;
