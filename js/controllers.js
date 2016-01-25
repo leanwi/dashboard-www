@@ -16,12 +16,6 @@ myApp.controller("FooterCtrl", ['$scope', 'UserAuthFactory',
   }
 ]);
 
-myApp.controller('HelpCtrl', ['$scope', 
-  function($scope) {
-    
-  }
-]);
-
 myApp.controller("HomeCtrl", ['$scope', '$location', 'libraryListFactory',
   function($scope, $location, libraryListFactory) {
     var startDate = $location.search().start ?
