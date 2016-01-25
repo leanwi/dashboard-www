@@ -16,109 +16,6 @@ myApp.controller("FooterCtrl", ['$scope', 'UserAuthFactory',
   }
 ]);
 
-myApp.controller("CirculationTimeSeriesCtrl", ['$scope', 'chartDataFactory',
-  function($scope, chartDataFactory) {
-    var initialDate = true;
-    var initialCode = true;
-    $scope.metrics = [
-      {metric: 'ils-checkout:total', name: 'Checkouts'},
-      {metric: 'ils-checkin:total', name: 'Checkins'},
-      {metric: 'ils-renewal:total', name: 'Renewals'},
-      {metric: 'ils-borrowed:total', name: 'Items Borrowed'},
-      {metric: 'ils-lent:total', name: 'Items Lent'},
-      {metric: 'ils-item-record:total', name: 'New Items'},
-      {metric: 'ils-patron-record:total', name: 'New Patrons'},
-      {metric: 'pharos:total', name: 'Pharos'},
-      {metric: 'wireless:total', name: 'Wireless'},
-      {metric: 'overdrive:total', name: 'Overdrive'}
-    ];
-    $scope.selectedAction = {metric: 'ils-checkout:total', name: 'Checkouts'};
-    $scope.options = {};
-    $scope.options.id =  'chart-home-comparisons';
-    $scope.options.type = "Line";
-    $scope.options.legend = false;
-    $scope.$watch('selectedAction', init);
-    $scope.$watch('$parent.datepicker.date', function(date) {
-      if(initialDate) {initialDate = false;}
-      else {init();}
-    });
-    $scope.$watch('$parent.code', function(code) {
-      if(initialCode){initialCode = false;}
-      else {init();}
-    });
-        
-    function init() {
-      var def = {series: []};
-      var dates = _.map(new Array(12), function(item, index) {
-        return {
-          start: moment($scope.$parent.datepicker.date.endDate, 'MM-DD-YYYY').subtract('months', index).startOf('month').format('MM-DD-YYYY'),
-          end: moment($scope.$parent.datepicker.date.endDate, 'MM-DD-YYYY').subtract('months', index).endOf('month').format('MM-DD-YYYY')
-        };
-      }).reverse();
-      $scope.options.data = [];
-      $scope.options.labels = _.map(dates, function(date){return moment(date.start, 'MM-DD-YYYY').format('MMMM YYYY');});
-
-      _.each(dates, function(date, dateIndex) {        
-        def.series.push({
-          code: $scope.$parent.code,
-          start: date.start,
-          end: date.end,
-          action: $scope.selectedAction.metric
-        });
-      });
-
-      chartDataFactory.getData(def, $scope).then(function(data) {
-        $scope.options.data = [_.map(data, function(response) {return response.data[0];})];
-      });
-    }
-  }
-]);
-
-myApp.controller("CirculationSummaryCtrl", ['$scope', 'summaryFactory',
-  function($scope, summaryFactory) {
-    summaryFactory.watch($scope, init);
-    var placeholders = [
-      'checkouts', 
-      'checkins', 
-      'renewals', 
-      'borrowed', 
-      'loaned', 
-      'patrons', 
-      'items', 
-      'pharos', 
-      'wireless', 
-      'overdrive'
-    ];
-    
-    $scope.$watchGroup(placeholders, function() {
-      if(summaryFactory.checkGroup($scope, placeholders)) {
-        $scope.totalcirc = $scope.checkouts + $scope.renewals;
-        $scope.net = $scope.loaned - $scope.borrowed;
-        $scope.locallyowned = ($scope.checkouts - $scope.borrowed) / $scope.checkouts * 100;
-      }
-      else {
-        $scope.totalcirc = null;
-        $scope.net = null;
-        $scope.locallyowned = null; 
-      }
-    });
-    
-    function init() {
-      summaryFactory.getAction($scope, 'ils-checkout:total', 'checkouts');
-      summaryFactory.getAction($scope, 'ils-checkin:total', 'checkins');
-      summaryFactory.getAction($scope, 'ils-renewal:total', 'renewals');
-      summaryFactory.getAction($scope, 'ils-borrowed:total', 'borrowed');
-      summaryFactory.getAction($scope, 'ils-lent:total', 'loaned');
-      summaryFactory.getAction($scope, 'ils-patron-record:total', 'patrons');
-      summaryFactory.getAction($scope, 'ils-item-record:total', 'items');   
-      summaryFactory.getAction($scope, 'pharos:total', 'pharos');
-      summaryFactory.getAction($scope, 'wireless:total', 'wireless');      
-      summaryFactory.getAction($scope, 'overdrive:total', 'overdrive');       
-    }    
-  }
-]);
-
-
 myApp.controller("HomeCtrl", ['$scope', '$location', 'libraryListFactory',
   function($scope, $location, libraryListFactory) {
     var startDate = $location.search().start ?
@@ -196,6 +93,108 @@ myApp.controller("HomeCtrl", ['$scope', '$location', 'libraryListFactory',
         section: $scope.section
       });
     }
+  }
+]);
+
+myApp.controller("CirculationTimeSeriesCtrl", ['$scope', 'chartDataFactory',
+  function($scope, chartDataFactory) {
+    var initialDate = true;
+    var initialCode = true;
+    $scope.metrics = [
+      {metric: 'ils-checkout:total', name: 'Checkouts'},
+      {metric: 'ils-checkin:total', name: 'Checkins'},
+      {metric: 'ils-renewal:total', name: 'Renewals'},
+      {metric: 'ils-borrowed:total', name: 'Items Borrowed'},
+      {metric: 'ils-lent:total', name: 'Items Lent'},
+      {metric: 'ils-item-record:total', name: 'New Items'},
+      {metric: 'ils-patron-record:total', name: 'New Patrons'},
+      {metric: 'pharos:total', name: 'Pharos'},
+      {metric: 'wireless:total', name: 'Wireless'},
+      {metric: 'overdrive:total', name: 'Overdrive'}
+    ];
+    $scope.selectedAction = {metric: 'ils-checkout:total', name: 'Checkouts'};
+    $scope.options = {};
+    $scope.options.id =  'chart-home-comparisons';
+    $scope.options.type = "Line";
+    $scope.options.legend = false;
+    $scope.$watch('selectedAction', init);
+    $scope.$watch('$parent.datepicker.date', function(date) {
+      if(initialDate) {initialDate = false;}
+      else {init();}
+    });
+    $scope.$watch('$parent.code', function(code) {
+      if(initialCode){initialCode = false;}
+      else {init();}
+    });
+        
+    function init() {
+      var def = {series: []};
+      var dates = _.map(new Array(12), function(item, index) {
+        return {
+          start: moment($scope.$parent.datepicker.date.endDate).subtract(index, 'months').startOf('month').format('MM-DD-YYYY'),
+          end: moment($scope.$parent.datepicker.date.endDate).subtract(index, 'months').endOf('month').format('MM-DD-YYYY')
+        };
+      }).reverse();
+      $scope.options.data = [];
+      $scope.options.labels = _.map(dates, function(date){return moment(date.start, 'MM-DD-YYYY').format('MMMM YYYY');});
+
+      _.each(dates, function(date, dateIndex) {        
+        def.series.push({
+          code: $scope.$parent.code,
+          start: date.start,
+          end: date.end,
+          action: $scope.selectedAction.metric
+        });
+      });
+
+      chartDataFactory.getData(def, $scope).then(function(data) {
+        $scope.options.data = [_.map(data, function(response) {return response.data[0];})];
+      });
+    }
+  }
+]);
+
+myApp.controller("CirculationSummaryCtrl", ['$scope', 'summaryFactory',
+  function($scope, summaryFactory) {
+    summaryFactory.watch($scope, init);
+    var placeholders = [
+      'checkouts', 
+      'checkins', 
+      'renewals', 
+      'borrowed', 
+      'loaned', 
+      'patrons', 
+      'items', 
+      'pharos', 
+      'wireless', 
+      'overdrive'
+    ];
+    
+    $scope.$watchGroup(placeholders, function() {
+      if(summaryFactory.checkGroup($scope, placeholders)) {
+        $scope.totalcirc = $scope.checkouts + $scope.renewals;
+        $scope.net = $scope.loaned - $scope.borrowed;
+        $scope.locallyowned = ($scope.checkouts - $scope.borrowed) / $scope.checkouts * 100;
+      }
+      else {
+        $scope.totalcirc = null;
+        $scope.net = null;
+        $scope.locallyowned = null; 
+      }
+    });
+    
+    function init() {
+      summaryFactory.getAction($scope, 'ils-checkout:total', 'checkouts');
+      summaryFactory.getAction($scope, 'ils-checkin:total', 'checkins');
+      summaryFactory.getAction($scope, 'ils-renewal:total', 'renewals');
+      summaryFactory.getAction($scope, 'ils-borrowed:total', 'borrowed');
+      summaryFactory.getAction($scope, 'ils-lent:total', 'loaned');
+      summaryFactory.getAction($scope, 'ils-patron-record:total', 'patrons');
+      summaryFactory.getAction($scope, 'ils-item-record:total', 'items');   
+      summaryFactory.getAction($scope, 'pharos:total', 'pharos');
+      summaryFactory.getAction($scope, 'wireless:total', 'wireless');      
+      summaryFactory.getAction($scope, 'overdrive:total', 'overdrive');       
+    }    
   }
 ]);
 
