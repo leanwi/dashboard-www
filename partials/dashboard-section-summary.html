@@ -30,7 +30,7 @@
         <div class="panel-heading">Past 12 Months</div>
         <div class="panel-body">
           <div class="waiting" ng-show="waiting"><i class="fa fa-spinner fa-spin"></i></div>
-          <canvas id="{{options.id}}" class="chart-base" chart-legend="{{options.legend}}" chart-type="options.type" chart-data="options.data" chart-labels="options.labels" chart-series="options.series"></canvas>
+          <canvas id="{{options.id}}" class="chart-base" chart-options="options.other" chart-legend="{{options.legend}}" chart-type="options.type" chart-data="options.data" chart-labels="options.labels" chart-series="options.series"></canvas>
           <div style="text-align: center;">
             Choose a stat: <select ng-model="selectedAction" ng-options="metric.name for metric in metrics track by metric.metric"></select>
           </div>

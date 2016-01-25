@@ -16,6 +16,12 @@ myApp.controller("FooterCtrl", ['$scope', 'UserAuthFactory',
   }
 ]);
 
+myApp.controller('HelpCtrl', ['$scope', 
+  function($scope) {
+    
+  }
+]);
+
 myApp.controller("HomeCtrl", ['$scope', '$location', 'libraryListFactory',
   function($scope, $location, libraryListFactory) {
     var startDate = $location.search().start ?
@@ -117,6 +123,7 @@ myApp.controller("CirculationTimeSeriesCtrl", ['$scope', 'chartDataFactory',
     $scope.options.id =  'chart-home-comparisons';
     $scope.options.type = "Line";
     $scope.options.legend = false;
+    $scope.options.other = {scaleBeginAtZero: true};
     $scope.$watch('selectedAction', init);
     $scope.$watch('$parent.datepicker.date', function(date) {
       if(initialDate) {initialDate = false;}

@@ -1,4 +1,6 @@
 var myApp = angular.module('ngclient', ['chart.js', 'ngRoute', 'daterangepicker']);
+
+myApp.constant('apiUrl', 'http://localhost:3000/api/v1/');
  
 myApp.config(function($routeProvider, $httpProvider) {
  
@@ -24,18 +26,16 @@ myApp.config(function($routeProvider, $httpProvider) {
       access: {
         requiredLogin: true
       }
-    }).when('/page2', {
-      templateUrl: 'partials/page2.html',
-      controller: 'Page2Ctrl',
+    }).when('/help', {
+      templateUrl: 'partials/help.html',
+      controller: 'HelpCtrl',
       access: {
-        requiredLogin: true
+        requiredLogin: false
       }
     }).otherwise({
       redirectTo: '/login'
     });
 });
-
-myApp.constant('apiUrl', 'http://localhost:3000/api/v1/');
  
 myApp.run(function($rootScope, $window, $location, AuthenticationFactory) {
   // when the page refreshes, check if the user is already logged in

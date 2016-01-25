@@ -1,0 +1,132 @@
+<div class="container" ng-controller="HelpCtrl">
+  <div class="text-heavy">
+    <h1 id="help">Help</h1>
+    <ul>
+      <li><a href="#the-basics">The basics</a></li>
+      <li><a href="#options">Options</a></li>
+      <li><a href="#chart-descriptions">Chart descriptions</a></li>
+      <li><a href="#coverage">Coverage</a></li>
+      <li><a href="#credits">Credits</a></li>
+    </ul>
+    <hr>
+    <h2 id="the-basics">The basics</h2>
+    <p>This statistical dashboard is intended to give IFLS-member libraries a site to view and compare statistics from a number
+      of different sources. Currently, it only has some basic functionality and reports; see the <a href="#enhancements">enhancements section</a>      for what's planned in the future.</p>
+    <p>It's very simply to navigate, there are only three things you can do:</p>
+    <ol>
+      <li>Select a library<img src="/assets/images/selectlibrary.png" alt="Select a library screenshot"></li>
+      <li>Select a date range<img src="/assets/images/selectdaterange.png" alt="Select a date range screenshot" style="display:block; border: 1px solid silver;"></li>
+      <li>Select a category<img src="/assets/images/selectcategory.png" alt="Select a category screenshot" style="display:block; border: 1px solid silver;"></li>
+    </ol>
+    <hr>
+    <h2 id="options">Options</h2>
+    <p>Each chart except <cite>Summary</cite> charts can be viewed in a number of different formats. To select a different format:</p>
+    <ol>
+      <li>Hover over the chart</li>
+      <li>Find the toolbar that appears below the chart (see image below).</li>
+      <li>Select the new format.</li>
+    </ol>
+    <p>When you hover over the chart, some options for downloading the data will also appear.</p>
+    <p><img src="/assets/images/toolbar.png" alt="Toolbar screenshot"></p>
+    <hr>
+    <h2 id="chart-descriptions">Chart descriptions</h2>
+    <h3>Summary Tab</h3>
+    <p>Summary charts are brief overviews. If you select an individual library instead of <cite>All libraries</cite>, you'll
+      also see checkouts, checkins and renewals broken down by terminal number. </p>
+    <ul>
+      <li>Wireless data is only available for those libraries that have Fortinet access points.</li>
+      <li>E-materials data is only available after the month has ended. Current month data is not available. Freading data will
+        be added shortly.</li>
+      <li>Website data is currently only available for libraries that host their websites through IFLS. If you do not host your
+        website through IFLS, but want to see your data here, please contact us through the <a href="http://helpdesk.iflsweb.org"
+        target="_blank">Help Desk</a>. If you selected <cite>All libraries</cite>, the website data is for the MORE catalog.</li>
+    </ul>
+    <h3>ILS Tab</h3>
+    <p>The data in this section is updated from the Sierra database nightly. We intend to add more reports to this section in
+      the future. Data from the following item/bib fields are available: owning location, location code, format, itype, and
+      icode2. Data from the following patron fields are available: act150 location, home library, age, and ptype.</p>
+    <ul>
+      <li>Note that data by day of the week is the <i>average</i> for that day.</li>
+      <li>Large data sets (i.e. Checkouts by Act150 or Age) are summarized for the charts, but if you select the <i>Table</i>        view or download to Excel (see <a href="#options">Options</a> section above), you'll get the full data set.</li>
+    </ul>
+    <h3>E-materials Tab</h3>
+    <p>The data in this section is imported from Overdrive monthly. I'm working with Overdrive to see if there is an easy way
+      for us to import more current data.</p>
+    <ul>
+      <li>Note that data by day of the week is the <i>average</i> for that day.</li>
+      <li>Freegal data will hopefully be added to this tab in the next few months.</li>
+    </ul>
+    <h3>Technology Tab</h3>
+    <ul>
+      <li>Note that data by day of the week is the <i>average</i> for that day.</li>
+      <li>Wireless data is only available for those libraries that have Fortinet access points. It is updated nightly.</li>
+      <li>Computer uses comes from Pharos. It is updated nightly.</li>
+      <li>The bandwidth charts are available for those libraries that use Fortinet routers managed by IFLS. For some libraries,
+        an incorrect chart is displayed. This will be fixed shortly.</li>
+    </ul>
+    <h3>Websites Tab</h3>
+    <ul>
+      <li>Not available unless a specific library is selected</li>
+      <li>Website data is currently only available for libraries that host their websites through IFLS. If you do not host your
+        website through IFLS, but want to see your data here, please contact us through the <a href="http://helpdesk.iflsweb.org"
+        target="_blank">Help Desk</a>. If you selected <cite>All libraries</cite>, the website data is for the MORE catalog.</li>
+    </ul>
+    <hr>
+    <h2 id="coverage">Coverage</h2>
+    <table class="table table-bordered table-condensed">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Earliest Data</th>
+          <th>Latest Data</th>
+          <th>Last Update</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>Circulation Transactions</th>
+          <td>09/23/2014 08:41 am</td>
+          <td>01/25/2016 12:25 am</td>
+          <td>01/25/2016 01:00 am</td>
+        </tr>
+        <tr>
+          <th>Item/Patron Records</th>
+          <td>09/02/2014 08:53 am</td>
+          <td>01/24/2016 03:32 pm</td>
+          <td>01/25/2016 01:00 am</td>
+        </tr>
+        <tr>
+          <th>Overdrive Transactions</th>
+          <td>01/01/2014 12:00 am</td>
+          <td>12/31/2015 12:00 am</td>
+          <td>01/04/2016 11:20 am</td>
+        </tr>
+        <tr>
+          <th>Pharos Sessions</th>
+          <td>01/02/2014 09:43 am</td>
+          <td>01/24/2016 04:56 pm</td>
+          <td>01/25/2016 01:00 am</td>
+        </tr>
+        <tr>
+          <th>Wireless Sessions</th>
+          <td>08/25/2014 04:29 pm</td>
+          <td>01/25/2016 12:36 am</td>
+          <td>01/25/2016 01:00 am</td>
+        </tr>
+      </tbody>
+    </table>
+    <p><b>Notes</b></p>
+    <ul>
+      <li>Website data (if available for that library) is current and February 2015 is the first full month.</li>
+      <li>Availability of wireless session data is available only for libraries using Fortinet wireless access points. Each unique
+        connection within a one hour period is considered a <i>session</i></li>
+    </ul>
+    <hr>
+    <h2 id="credits">Credits</h2>
+    <p>Please see the project pages for a list of technologies used:</p>
+    <ul>
+      <li><a href="https://github.com/glfalkenberg/dashboard-www" target="_blank">glfalkenberg/dashboard-www</a></li>
+      <li><a href="https://github.com/glfalkenberg/dashboard-api" target="_blank">glfalkenberg/dashboard-api</a></li>
+    </ul>
+  </div>
+</div>
