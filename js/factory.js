@@ -297,7 +297,7 @@ myApp.factory('chartDataFactory', function($http, $q, apiUrl, $filter) {
     },
     draw: function(data) {
       var html = '<div class=\'table-container\'><table>';
-      if(data.datasets.length > 1) {
+      if(data.datasets && data.datasets.length > 1) {
         html += '<thead><tr><td></td>'
         _.each(data.datasets, function(set) {
           html += '<th>' + set.label + '</th>';
