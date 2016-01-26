@@ -7,8 +7,10 @@ myApp.controller("HeaderCtrl", ['$scope', '$location',
   }
 ]);
 
-myApp.controller("FooterCtrl", ['$scope', 'UserAuthFactory',
-  function($scope, UserAuthFactory) {
+myApp.controller("FooterCtrl", ['$scope', 'UserAuthFactory', 'siteInfo',
+  function($scope, UserAuthFactory, siteInfo) {
+    $scope.url = siteInfo.url;
+    $scope.name = siteInfo.name;
 
     $scope.logout = function () {
       UserAuthFactory.logout();
