@@ -20,7 +20,8 @@
     "font-awesome": "~4.5.0",
     "jquery": "~2.1.4",
     "bootstrap-daterangepicker": "~2.1.17",
-    "angular-daterangepicker": "~0.2.2"
+    "angular-daterangepicker": "~0.2.2",
+    "html2canvas": "~0.4.1"
   },
   "resolutions": {
     "angular": "~1.4.x",

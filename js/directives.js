@@ -1,45 +1,8 @@
-/* global myApp */
 myApp.directive('chartTypePicker', function() {
   var directive = {
     templateUrl: 'partials/dashboard-chart-picker.html'
   };
   
-  return directive;
-});
-
-myApp.directive('dashboardSectionSummary', function() {
-  var directive = {
-    restrict: 'E',
-    templateUrl: 'partials/dashboard-section-summary.html'
-  };
-
-  return directive;
-});
-
-myApp.directive('dashboardSectionIls', function() {
-  var directive = {
-    restrict: 'E',
-    templateUrl: 'partials/dashboard-section-ils.html'
-  };
-
-  return directive;
-});
-
-myApp.directive('dashboardSectionEmaterials', function() {
-  var directive = {
-    restrict: 'E',
-    templateUrl: 'partials/dashboard-section-ematerials.html'
-  };
-
-  return directive;
-});
-
-myApp.directive('dashboardSectionTechnology', function() {
-  var directive = {
-    restrict: 'E',
-    templateUrl: 'partials/dashboard-section-technology.html'
-  };
-
   return directive;
 });
 
