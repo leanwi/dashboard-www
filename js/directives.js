@@ -1,6 +1,26 @@
 myApp.directive('chartTypePicker', function() {
   var directive = {
-    templateUrl: 'partials/dashboard-chart-picker.html'
+    controller: function($scope, apiUrl) {
+      $scope.selectType = function(type) {
+        $scope.chart.options.type = type;
+        $scope.processData();
+      };
+      $scope.makeImage = function() {
+        console.log($scope);
+        html2canvas(document.getElementById($scope.options.id + '-container'), {
+          onrendered: function(canvas) {
+            window.location.href=canvas.toDataURL();
+          }
+        });
+      }
+      $scope.exportExcel = function() {
+        var form = $('<form method="POST" enctype="application/x-www-form-urlencoded" target="_blank" action="' + apiUrl + 'util/charttoexcel">');
+        form.append($("<input type='hidden' name='chart' value='" + angular.toJson($scope.chart) + "'>"));
+        $('body').append(form);
+        form.submit();
+      }      
+    },
+    templateUrl: 'partials/dashboard-chart-toolbar.html'
   };
   
   return directive;
@@ -14,37 +34,17 @@ myApp.directive('dashboardChart', function() {
     controller: function($scope, $attrs, chartDataFactory) {
       var initialCode = true;
       var initialDate = true;
-      var chart = {options: {}};
       counter += 1;
-      setIsLibrary();
-      getData();    
+      $scope.chart = {options: {}};
+      $scope.showChart = true;
+      $scope.toolbar = $attrs.hasOwnProperty('noToolbar') ? false : true;
       
       // $scope.options contains the options as needed by Chart.js
       $scope.options = {};
-      $scope.options.title = chart.options.title;
+      $scope.options.title = $scope.chart.options.title;
       $scope.options.id = 'chart' + counter;
-      $scope.options.type = chart.options.type;
-      $scope.options.legend = chart.options.legend;
-      $scope.showChart = true;
-      $scope.toolbar = $attrs.hasOwnProperty('noToolbar') ? false : true;
-      $scope.selectType = function(type) {
-        chart.options.type = type;
-        processData();
-      };
-      $scope.makeImage = function() {
-        html2canvas(document.getElementById($scope.options.id + '-container'), {
-          onrendered: function(canvas) {
-            window.location.href=canvas.toDataURL();
-          }
-        });
-      }
-      $scope.exportExcel = function() {
-        var form = $('<form method="POST" enctype="application/x-www-form-urlencoded" target="_blank" action="http://localhost:3000/api/v1/util/charttoexcel">');
-        form.append($("<input type='hidden' name='chart' value='" + angular.toJson(chart) + "'>"));
-        $('body').append(form);
-        console.log(form);
-        form.submit();
-      }
+      $scope.options.type = $scope.chart.options.type;
+      $scope.options.legend = $scope.chart.options.legend;
       
       $scope.$watch('$parent.code', function(code) {
         if(initialCode) {
@@ -65,47 +65,8 @@ myApp.directive('dashboardChart', function() {
         }
       }, true); 
       
-      function createChartDefinition(opts) {
-        if(!opts){opts = {};}
-        var selectedDateAndCode = {
-          code: opts.code || $scope.$parent.code, 
-          start: opts.start || moment($scope.$parent.datepicker.date.startDate).format('MM-DD-YYYY'),
-          end: opts.end || moment($scope.$parent.datepicker.date.endDate).format('MM-DD-YYYY') 
-        };
-        var rawSeries = angular.fromJson($attrs.series);
-        var seriesDef = chartDataFactory.insertSelectedDateAndCode(rawSeries, selectedDateAndCode);
-        chart.options.series = seriesDef;
-        chart.options.format = $attrs.format;
-        chart.options.title = $attrs.title;
-        chart.options.groups = $attrs.groups;
-        chart.options.type = $attrs.type || 'Bar'
-        chart.options.legend = $attrs.legend || false;
-        chart.options.limit = $attrs.limit;
-      }     
-      
-      function getData() {
-        createChartDefinition();
-        chartDataFactory.getData(chart.options, $scope).then(function(data) {
-          if(data[0].data.length > 0) {
-            $scope.nodata = false;
-            chart.data = data;
-            var process = _.compose(
-              chartDataFactory.format, 
-              chartDataFactory.group,
-              chartDataFactory.limit, 
-              chartDataFactory.normalizeSeries
-            );
-            chart = process(chart);
-            processData();
-          }
-          else {
-            $scope.nodata = true;
-          }
-        });                  
-      }
-      
-      function processData() {
-        var tmpChart = chartDataFactory.handleSpecialCharts(chart);
+      $scope.processData = function() {
+        var tmpChart = chartDataFactory.handleSpecialCharts($scope.chart);
         $scope.options.data = tmpChart.data.data;
         $scope.options.labels = tmpChart.data.labels;
         $scope.options.series = tmpChart.data.series;
@@ -116,7 +77,48 @@ myApp.directive('dashboardChart', function() {
         if(!$scope.options.legend) {
           $('#' + $scope.options.id + ' ~ chart-legend').remove();
         }
-        
+      };
+      
+      setIsLibrary();
+      getData();      
+      
+      function createChartDefinition(opts) {
+        if(!opts){opts = {};}
+        var selectedDateAndCode = {
+          code: opts.code || $scope.$parent.code, 
+          start: opts.start || moment($scope.$parent.datepicker.date.startDate).format('MM-DD-YYYY'),
+          end: opts.end || moment($scope.$parent.datepicker.date.endDate).format('MM-DD-YYYY') 
+        };
+        var rawSeries = angular.fromJson($attrs.series);
+        var seriesDef = chartDataFactory.insertSelectedDateAndCode(rawSeries, selectedDateAndCode);
+        $scope.chart.options.series = seriesDef;
+        $scope.chart.options.format = $attrs.format;
+        $scope.chart.options.title = $attrs.title;
+        $scope.chart.options.groups = $attrs.groups;
+        $scope.chart.options.type = $attrs.type || 'Bar'
+        $scope.chart.options.legend = $attrs.legend || false;
+        $scope.chart.options.limit = $attrs.limit;
+      }     
+      
+      function getData() {
+        createChartDefinition();
+        chartDataFactory.getData($scope.chart.options, $scope).then(function(data) {
+          if(data[0].data.length > 0) {
+            $scope.nodata = false;
+            $scope.chart.data = data;
+            var process = _.compose(
+              chartDataFactory.format, 
+              chartDataFactory.group,
+              chartDataFactory.limit, 
+              chartDataFactory.normalizeSeries
+            );
+            $scope.chart = process($scope.chart);
+            $scope.processData();
+          }
+          else {
+            $scope.nodata = true;
+          }
+        });                  
       }
 
       function setIsLibrary() {
