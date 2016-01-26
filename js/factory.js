@@ -48,39 +48,6 @@ myApp.factory('statusFactory', function($http, $q, apiUrl) {
   return service;
 });
 
-myApp.factory('summaryFactory', function($sce, chartDataFactory) {
-  var service = {};
-  
-  service.watch = function(scope, callback) {
-    scope.$watch('$parent.datepicker.date', callback);
-    scope.$watch('$parent.code', callback);
-  };
-  
-  service.checkGroup = function(scope, group) {
-    var groupReceivedData = true;
-    _.each(group, function(m) {if(scope[m] === null) {groupReceivedData = false;}});
-    return groupReceivedData;    
-  };
-  
-  service.getAction = function(scope, action, field) {
-    scope[field] = null;  
-    scope[field + 'Rank'] = null;
-    var def = {series: [{
-      start: moment(scope.$parent.datepicker.date.startDate).format('MM-DD-YYYY'),
-      end: moment(scope.$parent.datepicker.date.endDate).format('MM-DD-YYYY'),
-      code: scope.$parent.code,
-      action: action
-    }]};
-    chartDataFactory.getData(def, scope).then(function(data) {
-      scope[field] = data[0].data[0] || 0;
-      if(data[0].data[1]) {scope[field + 'Rank'] = '(' + data[0].data[1] + ')';}
-    });
-  };
-  
-  return service;
-});
-  
-
 myApp.factory('chartDataFactory', function($http, $q, apiUrl, $filter) {
   var service = {};
   var _baseUrl = apiUrl + 'actions';
