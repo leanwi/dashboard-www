@@ -39,13 +39,6 @@ myApp.directive('dashboardChart', function() {
       $scope.showChart = true;
       $scope.toolbar = $attrs.hasOwnProperty('noToolbar') ? false : true;
       
-      // $scope.options contains the options as needed by Chart.js
-      $scope.options = {};
-      $scope.options.title = $scope.chart.options.title;
-      $scope.options.id = 'chart' + counter;
-      $scope.options.type = $scope.chart.options.type;
-      $scope.options.legend = $scope.chart.options.legend;
-      
       $scope.$watch('$parent.code', function(code) {
         if(initialCode) {
           initialCode = false;
@@ -80,7 +73,14 @@ myApp.directive('dashboardChart', function() {
       };
       
       setIsLibrary();
-      getData();      
+      getData();    
+      
+      // $scope.options contains the options as needed by Chart.js
+      $scope.options = {};
+      $scope.options.title = $scope.chart.options.title;
+      $scope.options.id = 'chart' + counter;
+      $scope.options.type = $scope.chart.options.type;
+      $scope.options.legend = $scope.chart.options.legend;        
       
       function createChartDefinition(opts) {
         if(!opts){opts = {};}
