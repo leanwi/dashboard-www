@@ -9,25 +9,33 @@ Example sites:
 ## Installation
 1. Install [bower](http://bower.io) and its prerequisites.
 2. Clone this repository to a directory on your server 
-```Shell
-$ git clone https://github.com/glfalkenberg/dashboard-www.git /opt/dashboard/www
-```
+
+    ```bash
+    $ git clone https://github.com/glfalkenberg/dashboard-www.git /opt/dashboard/www
+    ```
+
 3. Enter that directory and install the necessary libraries
-```Shell
-$ cd /opt/dashboard/www
-$ bower install
-```
+
+    ```bash
+    $ cd /opt/dashboard/www
+    $ bower install
+    ```
+    
 4. Create main application configuration file
-```Shell
-$ vi js/custom-app.js
-```
-Add the following information, customizing it as necessary
-```javascript
-// Path to your data api
-myApp.constant('apiUrl', 'http://api.dashboard.yourlibrary.org/api/v1/');
-// Your library's information, which is used in the footer
-myApp.constant('siteInfo', {name: 'Your Library', url: 'http://www.yourlibrary.org'});
-```
+
+    ```bash
+    $ vi js/custom-app.js
+    ```
+    
+  Add the following information, customizing it as necessary
+  
+    ```javascript
+    // Path to your data api
+    myApp.constant('apiUrl', 'http://api.dashboard.yourlibrary.org/api/v1/');
+    // Your library's information, which is used in the footer
+    myApp.constant('siteInfo', {name: 'Your Library', url: 'http://www.yourlibrary.org'});
+    ```
+    
 5. Add charts to your site by creating and editing js/custom-controllers.js, partials/custom-home.html, partials/custom-home-sections.html, and css/custom/*
 More information about editing those files is found in their directories' README files.
 
@@ -35,7 +43,8 @@ More information about editing those files is found in their directories' README
 
 ## Upgrades
 Upgrade using a pull request in the website's root directory (for example -- /opt/dashboard/www)
-```Shell
+
+```bash
 $ git pull
 ```
 
