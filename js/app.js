@@ -1,6 +1,4 @@
 var myApp = angular.module('ngclient', ['chart.js', 'ngRoute', 'daterangepicker']);
-
-myApp.constant('apiUrl', 'http://localhost:3000/api/v1/');
  
 myApp.config(function($routeProvider, $httpProvider) {
  
