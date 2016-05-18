@@ -5,6 +5,7 @@ This AngularJS-based frontend is meant to work the [Library Statistical Dashboar
 Example sites:
 - http://dashboard.iflsweb.org
 - http://dashboard.wvls.org
+- http://dashboard.mcfls.org
 
 ## Installation
 1. Install [bower](http://bower.io) and its prerequisites.
